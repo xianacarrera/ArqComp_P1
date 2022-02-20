@@ -23,8 +23,9 @@ double sumar(double A[], int ind[], int R){
 /*
  * Función que repite N_RED = 10 veces una operación de reducción de suma sobre el vector A.
  * Devuelve el valor medio.
+ * Nombre temporal.
  */
-double reducir(double A[], int ind[], double S[], int R){
+double repetir_reduccion(double A[], int ind[], double S[], int R){
     double media = 0.0;
     int i;
 
