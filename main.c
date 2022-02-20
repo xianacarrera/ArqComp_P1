@@ -3,6 +3,7 @@
 #include <pmmintrin.h>          // Opción -msse3 al compilar
 #include <time.h>
 #include <unistd.h>
+#include <math.h>               // Función log
 
 #define N 20          // Tamaño del vector
 #define D             // Parámetro de espaciado entre los elementos a sumar
@@ -58,6 +59,7 @@ void inicializar_A(double A[]){
  */
 void print_cache_info(){
     long total, vias, tam_linea;
+    long n_lineas_L1I, n_lineas_L1D, n_lineas_L2;
 
     /***** Caché L1 de instrucciones *****/
 
@@ -69,9 +71,11 @@ void print_cache_info(){
     tam_linea = sysconf(_SC_LEVEL1_ICACHE_LINESIZE);
 
     printf("**** Datos caché L1 de instrucciones: ****\n");
-    printf("\tTamanho total: %ld\n", total);            // TODO: Dar resultado en KB, MB
+    printf("\tTamanho total: %ld = 2^(%d)\n", total, (int) (log(total) / log(2)));
     printf("\tNº de vías: %ld\n", vias);
     printf("\tTamanho de linea: %ld\n\n", tam_linea);
+
+    n_lineas_L1I = total / tam_linea;
 
     /***** Caché L1 de datos *****/
 
@@ -80,9 +84,11 @@ void print_cache_info(){
     tam_linea = sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
 
     printf("**** Datos caché L1 de datos: ****\n");
-    printf("\tTamanho total: %ld\n", total);
+    printf("\tTamanho total: %ld = 2^(%d)\n", total, (int) (log(total) / log(2)));
     printf("\tNº de vías: %ld\n", vias);
     printf("\tTamanho de linea: %ld\n\n", tam_linea);
+
+    n_lineas_L1D = total / tam_linea;
 
     /***** Caché L2 *****/
 
@@ -91,9 +97,11 @@ void print_cache_info(){
     tam_linea = sysconf(_SC_LEVEL2_CACHE_LINESIZE);
 
     printf("**** Datos caché L2: ****\n");
-    printf("\tTamanho total: %ld\n", total);
+    printf("\tTamanho total: %ld = 2^(%d)\n", total, (int) (log(total) / log(2)));
     printf("\tNº de vías: %ld\n", vias);
     printf("\tTamanho de linea: %ld\n\n", tam_linea);
+
+    n_lineas_L2 = total / tam_linea;
 
     /**** Caché L3 ****/
     total = sysconf(_SC_LEVEL3_CACHE_SIZE);
@@ -104,6 +112,10 @@ void print_cache_info(){
     printf("\tTamanho total: %ld\n", total);
     printf("\tNº de vías: %ld\n", vias);
     printf("\tTamanho de linea: %ld\n\n", tam_linea);
+
+    printf("S1I = nº líneas L1I = %ld\n", n_lineas_L1I);
+    printf("S1D = nº líneas L1D = %ld\n", n_lineas_L1D);
+    printf("S2 = nº líneas L2 = %ld\n\n", n_lineas_L2);
 }
 
 
