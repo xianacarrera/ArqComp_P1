@@ -4,86 +4,110 @@
 #include <time.h>
 #include <unistd.h>
 #include <math.h>               // Función log
-#include "param.h"
+#include "counter.h"
 
 
 #define N_RED 10      // Número de veces que se repite la operación de reducción
 
 
+void reducir(double A[], int ind[], double S[], long R);
+void fijar_param(int * D, long * L, int * B, long * R, long * N, long * S1, long * S2);
+double calcular_media(double S[]);
+void inicializar_A(double A[], long N);
+void salir(char * msg);
+void calcular_indices(int ind[], int D, long R);
 
 
-void start_counter();
-double get_counter();
-double mhz();
+// Usar esta función para probar código temporalmente (la borraremos al entregar)
+void pruebas(double A[], int ind[], long N, long R);
 
 
-/* Initialize the cycle counter */
-static unsigned cyc_hi = 0;
-static unsigned cyc_lo = 0;
+int main() {
+    double * A;     // Array de doubles
+    int * ind;      // Array de referencias a posiciones de A
+    double * S;     // Resultados de la reducción
+    double ck;      // Tiempo de acceso en ciclos de reloj
+
+    long N;         // Tamaño del vector A
+    long R;         // Número de elementos de A a sumar
+    int D;          // Parámetro de espaciado entre los elementos a sumar: A[0], A[D], A[2*D], ..., A[(R-1)*D]
+
+    long S1;        // Número de líneas caché que caben en la caché L1 de datos
+    long S2;        // Número de líneas caché que caben en la caché L2
+    int B;          // Tamaño de línea caché
+    long L;         // Número de líneas caché diferentes que se deben leer en el acceso a A
 
 
-/* Set *hi and *lo to the high and low order bits of the cycle counter.
-Implementation requires assembly code to use the rdtsc instruction. */
-void access_counter(unsigned *hi, unsigned *lo){
-    asm("rdtsc; movl %%edx,%0; movl %%eax,%1" /* Read cycle counter */
-    : "=r" (*hi), "=r" (*lo) /* and move results to */
-    : /* No input */ /* the two outputs */
-    : "%edx", "%eax");
+    srand((unsigned int) time(NULL));      // Fijamos la semilla para la generación de números aleatorios
+    fijar_param(&D, &L, &B, &R, &N, &S1, &S2);         // Damos valores a los parámetros
+
+
+
+    if ((A = (double *) _mm_malloc(N * sizeof(double), S1)) == NULL)
+        salir("Error: no se ha podido reservar memoria para A");
+
+    // El tamaño máximo que puede tener ind es N (si apunta a todas las posiciones de A)
+    if ((ind = (int *) malloc(N * sizeof(int))) == NULL)
+        salir("Error: no se ha podido reservar memoria para ind");
+
+    if ((S = (double *) malloc(N_RED * sizeof(double))) == NULL)
+        salir("Error: no se ha podido reservar memoria para S");
+
+    inicializar_A(A, N);           // Guardamos N valores aleatorios en el rango [1, 2) en A
+    calcular_indices(ind, D, R);      // Almacenamos los índices de los elementos de A a sumar según el D elegido
+
+
+
+    //pruebas(A, ind);
+
+
+    start_counter();            // Iniciamos la medición del tiempo de acceso total
+
+    reducir(A, ind, S, R);         // Realizamos las 10 sumas de R elementos de A
+
+    ck = get_counter();         // Paramos el contador
+
+    printf("\n Clocks=%1.10lf \n",ck);
+
+    /* Esta rutina imprime a frecuencia de reloxo estimada coas rutinas start_counter/get_counter */
+    mhz(1,1);
+
+    // Imprimimos los 10 resultados (que deberían ser iguales) y su media para evitar optimizaciones del compilador
+    for (int i = 0; i < N_RED; i++) printf("S[%d] = %f\n", i, S[i]);
+    printf("Media: %f\n", calcular_media(S));
+
+    //print_cache_info();
+
+
+
+    // Liberamos la memoria reservada
+    _mm_free(A);
+    free(ind);
+    free(S);
+
+    return 0;
 }
 
-/* Record the current value of the cycle counter. */
-void start_counter(){
-    access_counter(&cyc_hi, &cyc_lo);
+
+void fijar_param(int * D, long * L, int * B, long * R, long * N, long * S1, long * S2){
+    *D = 5;          // Temporal
+    *S1 = sysconf(_SC_LEVEL1_DCACHE_SIZE) / sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
+    *S2 = sysconf(_SC_LEVEL2_CACHE_SIZE) / sysconf(_SC_LEVEL2_CACHE_LINESIZE);
+    *L = *S1;    // Temporal
+    *B = (int) sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
+    *R = (int) (ceil(*B * (*L - 1) / (double) *D)) + 1;
+    *N = *D * (*R-1) + 1;
 }
-
-/* Return the number of cycles since the last call to start_counter. */
-double get_counter(){
-    unsigned ncyc_hi, ncyc_lo;
-    unsigned hi, lo, borrow;
-    double result;
-
-    /* Get cycle counter */
-    access_counter(&ncyc_hi, &ncyc_lo);
-
-    /* Do double precision subtraction */
-    lo = ncyc_lo - cyc_lo;
-    borrow = lo > ncyc_lo;
-    hi = ncyc_hi - cyc_hi - borrow;
-    result = (double) hi * (1 << 30) * 4 + lo;
-    if (result < 0) {
-        fprintf(stderr, "Error: counter returns neg value: %.0f\n", result);
-    }
-
-    return result;
-}
-
-double mhz(int verbose, int sleeptime){
-    double rate;
-
-    start_counter();
-    sleep(sleeptime);
-    rate = get_counter() / (1e6*sleeptime);
-    if (verbose)
-        printf("\n Processor clock rate = %.1f MHz\n", rate);
-    return rate;
-}
-
-
-int D;             // Parámetro de espaciado entre los elementos a sumar
-long L;
-long R;
-int B;
-long N;
-long S1;
-long S2;
 
 
 /*
- * Función que repite N_RED = 10 veces una operación de reducción de suma sobre el vector A.
- * Devuelve el valor medio.
- * Nombre temporal.
+ * Función que suma R elementos de A[], cuyos índices están almacenados en ind[].
+ * La operación se repite N_RED = 10 veces. Cada resultado se guarda como un elemento de S[].
+ * @param A Array de doubles con los datos de entrada
+ * @param ind Array de enteros con los índices de los R datos de A a sumar
+ * @param S Array donde se guardarán los resultados
  */
-void reducir(double A[], int ind[], double S[]){
+void reducir(double A[], int ind[], double S[], long R){
     int i, j;
 
     for (i = 0; i < N_RED; i++) {
@@ -93,6 +117,11 @@ void reducir(double A[], int ind[], double S[]){
     }
 }
 
+/*
+ * Función que devuelve la media de los N_RED = 10 elementos de S[].
+ * El objetivo de esta función es utilizar los elementos de S[] para evitar optimizaciones del compilador.
+ * @param S Array de doubles sobre el que se realiza la media
+ */
 double calcular_media(double S[]){
     double media = 0.0;
     int i;
@@ -106,7 +135,7 @@ double calcular_media(double S[]){
 /*
  * Función que inicializa A con valores aleatorios con valor absoluto en el intervalo [1,2)
  */
-void inicializar_A(double A[]){
+void inicializar_A(double A[], long N){
     int i;
 
     for (i = 0; i < N; i++) {
@@ -114,9 +143,17 @@ void inicializar_A(double A[]){
         // Pasamos a double y dividimos entre RAND_MAX para obtener un número real en [0, 1)
         // Sumamos 1.0 para trasladar a [1, 2)
         A[i] = 1.0 + (double) rand() / RAND_MAX;
-        // Damos signo aleatorio. rand % 2 limita las posibilidades a {0, 1} -- *2 --> {0, 2} -- -1 --> {-1, 1}
+
+        // Multlicamos A[i] por 1 o -1 para dar signo aleatorio.
+        // rand % 2 tiene dos resultados: {0, 1}. Multiplicando por 2, obtenemos {0, 2}. Sumando -1, tenemos {-1, 1}.
         A[i] *= (rand() % 2) * 2 - 1;
     }
+}
+
+void calcular_indices(int ind[], int D, long R){
+    int i;
+
+    for (i = 0; i < R; i++) ind[i] = i * D;
 }
 
 
@@ -125,13 +162,7 @@ void salir(char * msg){
     exit(EXIT_FAILURE);
 }
 
-void calcular_indices(int ind[]){
-    int i;
-
-    for (i = 0; i < R; i++) ind[i] = i * D;
-}
-
-void pruebas(double A[], int ind[]){
+void pruebas(double A[], int ind[], long N, long R){
     int i;
 
     for (i = 0; i < N; i++){
@@ -147,59 +178,89 @@ void pruebas(double A[], int ind[]){
     printf("R = %ld\n", R);
 }
 
+/*
 
-int main() {
-    double * A;    // Array de doubles
-    int * ind;     // Array de referencias a posiciones de A
-    double * S;    // Resultados de la reducción
-
-    srand((unsigned int) time(NULL));        // Fijamos la semilla para la generación de números aleatorios
-
-    fijar_param(&D, &L, &B, &R, &N, &S1, &S2);
-
-    if ((A = (double *) _mm_malloc(N * sizeof(double), S1)) == NULL)
-        salir("Error: no se ha podido reservar memoria para A");
-
-    // El tamaño máximo que puede tener ind es N (si apunta a todas las posiciones de A)
-    if ((ind = (int *) malloc(N * sizeof(int))) == NULL)
-        salir("Error: no se ha podido reservar memoria para ind");
-
-    if ((S = (double *) malloc(N_RED * sizeof(double))) == NULL)
-        salir("Error: no se ha podido reservar memoria para S");
-
-    inicializar_A(A);
-    calcular_indices(ind);
-
-    pruebas(A, ind);
-
+int main(){
     double ck;
 
 
     start_counter();
 
-    /* Poñer aquí o código a medir */       reducir(A, ind, S);
-
+    /* Poñer aquí o código a medir */
+/*
     ck = get_counter();
 
     printf("\n Clocks=%1.10lf \n",ck);
 
     /* Esta rutina imprime a frecuencia de reloxo estimada coas rutinas start_counter/get_counter */
-    mhz(1,1);
+  /*  mhz(1,1);
 
 
-
-    for (int i = 0; i < N_RED; i++) printf("S[%d] = %f\n", i, S[i]);
-
-    printf("Media: %f\n", calcular_media(S));
-
-    //print_cache_info();
-
-
-
-
-    _mm_free(A);
-    free(ind);
-    free(S);
 
     return 0;
+}
+*/
+
+/*
+* Función que comprueba e imprime las características de los distintos niveles de caché del ordenador
+*/
+void print_cache_info(){
+    long total, vias, tam_linea;
+    long n_lineas_L1I, n_lineas_L1D, n_lineas_L2;
+
+    /***** Caché L1 de instrucciones *****/
+
+    // Tamaño total
+    total = sysconf(_SC_LEVEL1_ICACHE_SIZE);
+    // Nº de vías
+    vias = sysconf(_SC_LEVEL1_ICACHE_ASSOC);
+    // Tamaño de línea
+    tam_linea = sysconf(_SC_LEVEL1_ICACHE_LINESIZE);
+
+    printf("**** Datos caché L1 de instrucciones: ****\n");
+    printf("\tTamanho total: %ld = 2^(%d)\n", total, (int) (log(total) / log(2)));
+    printf("\tNº de vías: %ld\n", vias);
+    printf("\tTamanho de linea: %ld\n\n", tam_linea);
+
+    n_lineas_L1I = total / tam_linea;
+
+    /***** Caché L1 de datos *****/
+
+    total = sysconf(_SC_LEVEL1_DCACHE_SIZE);
+    vias = sysconf(_SC_LEVEL1_DCACHE_ASSOC);
+    tam_linea = sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
+
+    printf("**** Datos caché L1 de datos: ****\n");
+    printf("\tTamanho total: %ld = 2^(%d)\n", total, (int) (log(total) / log(2)));
+    printf("\tNº de vías: %ld\n", vias);
+    printf("\tTamanho de linea: %ld\n\n", tam_linea);
+
+    n_lineas_L1D = total / tam_linea;
+
+    /***** Caché L2 *****/
+
+    total = sysconf(_SC_LEVEL2_CACHE_SIZE);
+    vias = sysconf(_SC_LEVEL2_CACHE_ASSOC);
+    tam_linea = sysconf(_SC_LEVEL2_CACHE_LINESIZE);
+
+    printf("**** Datos caché L2: ****\n");
+    printf("\tTamanho total: %ld = 2^(%d)\n", total, (int) (log(total) / log(2)));
+    printf("\tNº de vías: %ld\n", vias);
+    printf("\tTamanho de linea: %ld\n\n", tam_linea);
+
+    n_lineas_L2 = total / tam_linea;
+
+    /**** Caché L3 ****/
+    total = sysconf(_SC_LEVEL3_CACHE_SIZE);
+    vias = sysconf(_SC_LEVEL3_CACHE_ASSOC);
+    tam_linea = sysconf(_SC_LEVEL3_CACHE_LINESIZE);
+
+    printf("**** Datos caché L3: ****\n");
+    printf("\tTamanho total: %ld\n", total);
+    printf("\tNº de vías: %ld\n", vias);
+    printf("\tTamanho de linea: %ld\n\n", tam_linea);
+
+    printf("S1I = nº líneas L1I = %ld\n", n_lineas_L1I);
+    printf("S1D = nº líneas L1D = %ld\n", n_lineas_L1D);
+    printf("S2 = nº líneas L2 = %ld\n\n", n_lineas_L2);
 }

@@ -3,11 +3,6 @@
 #include <unistd.h>
 
 
-void start_counter();
-double get_counter();
-double mhz();
-
-
 /* Initialize the cycle counter */
  static unsigned cyc_hi = 0;
  static unsigned cyc_lo = 0;
@@ -58,26 +53,3 @@ double mhz(int verbose, int sleeptime){
 	 printf("\n Processor clock rate = %.1f MHz\n", rate);
 	 return rate;
  }
-
-
-
-
-int main(){
-	double ck;
-
-
-	start_counter();
-
-	/* Poñer aquí o código a medir */
-
-	ck = get_counter();
-
-	printf("\n Clocks=%1.10lf \n",ck);
-
-	/* Esta rutina imprime a frecuencia de reloxo estimada coas rutinas start_counter/get_counter */
-	mhz(1,1);
-
-
- 
-	return 0;
-}
