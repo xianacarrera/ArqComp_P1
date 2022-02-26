@@ -11,7 +11,7 @@
 
 
 void reducir(double A[], int ind[], double S[], long R);
-void fijar_param(int * D, long * L, int * B, long * R, long * N, long * S1, long * S2);
+void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, float factor, int cache, int D);
 double calcular_media(double S[]);
 void inicializar_A(double A[], long N);
 void salir(char * msg);
@@ -19,10 +19,10 @@ void calcular_indices(int ind[], int D, long R);
 
 
 // Usar esta función para probar código temporalmente (la borraremos al entregar)
-void pruebas(double A[], int ind[], long N, long R);
+void pruebas(double A[], int ind[], int D, long L, int B, long R, long N, long S1, long S2);
 
 
-int main() {
+int main(int argc, char * argv[]) {
     double * A;     // Array de doubles
     int * ind;      // Array de referencias a posiciones de A
     double * S;     // Resultados de la reducción
@@ -37,11 +37,23 @@ int main() {
     int B;          // Tamaño de línea caché
     long L;         // Número de líneas caché diferentes que se deben leer en el acceso a A
 
+    if (argc != 4)
+        salir("Error: el programa debe recibir tres argumentos:\n"
+              "\t1) Un factor sobre S1 o S2\n"
+              "\t2) 1 o 2, para indicar L1 de datos (S1) o L2 (S2)\n"
+              "\t3) El valor de D a emplear");
+
 
     srand((unsigned int) time(NULL));      // Fijamos la semilla para la generación de números aleatorios
-    fijar_param(&D, &L, &B, &R, &N, &S1, &S2);         // Damos valores a los parámetros
+
+    // Damos valores a los parámetros
+    printf("\n\n\nParámetros: factor = %f, S%d, D = %d\n", atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
+
+    D = atoi(argv[3]);
+    fijar_param(&L, &B, &R, &N, &S1, &S2, atof(argv[1]),atoi(argv[2]), D);
 
 
+        pruebas(A, ind, D, L, B, R, N, S1, S2);
 
     if ((A = (double *) _mm_malloc(N * sizeof(double), S1)) == NULL)
         salir("Error: no se ha podido reservar memoria para A");
@@ -58,7 +70,6 @@ int main() {
 
 
 
-    //pruebas(A, ind);
 
 
     start_counter();            // Iniciamos la medición del tiempo de acceso total
@@ -89,14 +100,18 @@ int main() {
 }
 
 
-void fijar_param(int * D, long * L, int * B, long * R, long * N, long * S1, long * S2){
-    *D = 5;          // Temporal
-    *S1 = sysconf(_SC_LEVEL1_DCACHE_SIZE) / sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
-    *S2 = sysconf(_SC_LEVEL2_CACHE_SIZE) / sysconf(_SC_LEVEL2_CACHE_LINESIZE);
-    *L = *S1;    // Temporal
+void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, float factor, int cache, int D){
+    if (cache == 1) {
+        *S1 = sysconf(_SC_LEVEL1_DCACHE_SIZE) / sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
+        *L = *S1 * factor;
+    } else {
+        *S2 = sysconf(_SC_LEVEL2_CACHE_SIZE) / sysconf(_SC_LEVEL2_CACHE_LINESIZE);
+        *L = *S2 * factor;
+    }
+
     *B = (int) sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
-    *R = (int) (ceil(*B * (*L - 1) / (double) *D)) + 1;
-    *N = *D * (*R-1) + 1;
+    *R = (int) (ceil(*B * (*L - 1) / (double) D)) + 1;
+    *N = D * (*R-1) + 1;
 }
 
 
@@ -162,8 +177,8 @@ void salir(char * msg){
     exit(EXIT_FAILURE);
 }
 
-void pruebas(double A[], int ind[], long N, long R){
-    int i;
+void pruebas(double A[], int ind[], int D, long L, int B, long R, long N, long S1, long S2){
+    /*int i;
 
     for (i = 0; i < N; i++){
         //printf("A[%d] = %f\n", i, A[i]);
@@ -172,10 +187,15 @@ void pruebas(double A[], int ind[], long N, long R){
     printf("\n\n\n");
     for (i = 0; i < R; i++){
         //printf("ind[%d] = %d\n", i, ind[i]);
-    }
+    }*/
 
-    printf("N = %ld\n", N);
+    printf("D = %d\n", D);
+    printf("L = %ld\n", L);
+    printf("B = %d\n", B);
     printf("R = %ld\n", R);
+    printf("N = %ld\n", N);
+    printf("S1 = %ld\n", S1);
+    printf("S2 = %ld\n", S2);
 }
 
 /*
