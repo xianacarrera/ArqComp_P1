@@ -16,7 +16,7 @@ double calcular_media(double S[]);
 void inicializar_A(double A[], long N);
 void salir(char * msg);
 void calcular_indices(int ind[], int D, long R);
-
+void escribir_resultados(long L, int D, long R, long N, double ck);
 
 // Usar esta función para probar código temporalmente (la borraremos al entregar)
 void pruebas(double A[], int ind[], int D, long L, int B, long R, long N, long S1, long S2);
@@ -55,7 +55,7 @@ int main(int argc, char * argv[]) {
 
         pruebas(A, ind, D, L, B, R, N, S1, S2);
 
-    if ((A = (double *) _mm_malloc(N * sizeof(double), S1)) == NULL)
+    if ((A = (double *) _mm_malloc(N * sizeof(double), B)) == NULL)
         salir("Error: no se ha podido reservar memoria para A");
 
     // El tamaño máximo que puede tener ind es N (si apunta a todas las posiciones de A)
@@ -89,7 +89,7 @@ int main(int argc, char * argv[]) {
 
     //print_cache_info();
 
-
+    escribir_resultados(L, D, R, N, ck);
 
     // Liberamos la memoria reservada
     _mm_free(A);
@@ -102,16 +102,29 @@ int main(int argc, char * argv[]) {
 
 void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, float factor, int cache, int D){
     if (cache == 1) {
-        *S1 = sysconf(_SC_LEVEL1_DCACHE_SIZE) / sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
+        *B = (int) sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
+        *S1 = sysconf(_SC_LEVEL1_DCACHE_SIZE) / *B;
         *L = *S1 * factor;
     } else {
-        *S2 = sysconf(_SC_LEVEL2_CACHE_SIZE) / sysconf(_SC_LEVEL2_CACHE_LINESIZE);
+        *B = (int) sysconf(_SC_LEVEL2_CACHE_LINESIZE);
+        *S2 = sysconf(_SC_LEVEL2_CACHE_SIZE) / *B;
         *L = *S2 * factor;
     }
 
-    *B = (int) sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
     *R = (int) (ceil(*B * (*L - 1) / (double) D)) + 1;
     *N = D * (*R-1) + 1;
+}
+
+
+void escribir_resultados(long L, int D, long R, long N, double ck){
+    FILE *fp;
+
+    if ((fp = fopen("resultados.txt", "a")) == NULL)
+        salir("Error: no se ha podido abrir el archivo de resultados");
+
+    fprintf(fp, "L: %ld, D: %d, R: %ld, N: %ld\n%f\n", L, D, R, N, ck);
+
+    if (fclose(fp)) salir ("Error: no se ha podido cerrar el archivo de resultados");
 }
 
 
