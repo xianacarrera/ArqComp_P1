@@ -1,3 +1,8 @@
+
+/*
+ * ejemplo de ejecución: ./main.o factor(0.5) 1(cache L1) D(50)
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pmmintrin.h>          // Opción -msse3 al compilar
@@ -34,7 +39,7 @@ int main(int argc, char * argv[]) {
 
     long S1;        // Número de líneas caché que caben en la caché L1 de datos
     long S2;        // Número de líneas caché que caben en la caché L2
-    int B;          // Tamaño de línea caché
+    int B;          // Tamaño de línea caché en bytes
     long L;         // Número de líneas caché diferentes que se deben leer en el acceso a A
 
     if (argc != 4)
@@ -47,14 +52,15 @@ int main(int argc, char * argv[]) {
     srand((unsigned int) time(NULL));      // Fijamos la semilla para la generación de números aleatorios
 
     // Damos valores a los parámetros
-    printf("\n\n\nParámetros: factor = %f, S%d, D = %d\n", atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
+    printf("\n\n\nParámetros: factor = %f, S = %d, D = %d\n", atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
 
     D = atoi(argv[3]);
     fijar_param(&L, &B, &R, &N, &S1, &S2, atof(argv[1]),atoi(argv[2]), D);
 
 
-        pruebas(A, ind, D, L, B, R, N, S1, S2);
+    pruebas(A, ind, D, L, B, R, N, S1, S2);
 
+    // En la reserva de memoria de A se alinea el inicio del vector con el inicio de la línea cache
     if ((A = (double *) _mm_malloc(N * sizeof(double), B)) == NULL)
         salir("Error: no se ha podido reservar memoria para A");
 
@@ -80,7 +86,7 @@ int main(int argc, char * argv[]) {
 
     printf("\n Clocks=%1.10lf \n",ck);
 
-    /* Esta rutina imprime a frecuencia de reloxo estimada coas rutinas start_counter/get_counter */
+    // Imprimimos la frecuencia de reloj estimada 
     mhz(1,1);
 
     // Imprimimos los 10 resultados (que deberían ser iguales) y su media para evitar optimizaciones del compilador
@@ -102,16 +108,20 @@ int main(int argc, char * argv[]) {
 
 void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, float factor, int cache, int D){
     if (cache == 1) {
+    	// Determinar el valor actual de los parámetros de la caché L1
         *B = (int) sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
+        // S1 almacenará el número de líneas 
         *S1 = sysconf(_SC_LEVEL1_DCACHE_SIZE) / *B;
         *L = *S1 * factor;
     } else {
+    	// Determinar el valor actual de los parámetros de la caché L2
         *B = (int) sysconf(_SC_LEVEL2_CACHE_LINESIZE);
         *S2 = sysconf(_SC_LEVEL2_CACHE_SIZE) / *B;
         *L = *S2 * factor;
     }
-
+    // Obtención del número de accesos a A
     *R = (int) (ceil(*B * (*L - 1) / (double) D)) + 1;
+    // Leeremos hasta A[(R-1)*D], el tamaño mínimo del array tendrá el último valor del índice (R-1)*D + 1 (ese mismo)
     *N = D * (*R-1) + 1;
 }
 
@@ -122,7 +132,8 @@ void escribir_resultados(long L, int D, long R, long N, double ck){
     if ((fp = fopen("resultados.txt", "a")) == NULL)
         salir("Error: no se ha podido abrir el archivo de resultados");
 
-    fprintf(fp, "L: %ld, D: %d, R: %ld, N: %ld\n%f\n", L, D, R, N, ck);
+    //fprintf(fp, "L: %ld, D: %d, R: %ld, N: %ld\n%f\n", L, D, R, N, ck);
+    fprintf(fp, "L: %ld, D: %d, R: %ld, N: %ld\n%d\n", L, D, R, N, (int) ck);
 
     if (fclose(fp)) salir ("Error: no se ha podido cerrar el archivo de resultados");
 }
