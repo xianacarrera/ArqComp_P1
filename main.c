@@ -177,7 +177,7 @@ double calcular_media(double S[]){
 /*
  * Función que devuelve la mediana de los N_RED = 10 elementos de S[].
  * El objetivo de esta función es utilizar los elementos de S[] para evitar optimizaciones del compilador.
- * @param S Array de doubles sobre el que se realiza la media
+ * @param S Array de doubles sobre el que se realiza la mediana
  */
 
 double calcular_mediana(double S[]){
@@ -198,7 +198,7 @@ double calcular_mediana(double S[]){
 
 /*
  * Función que ordenalos N_RED = 10 elementos de S[] en orden ascendente para calcular la mediana.
- * @param S Array de doubles sobre el que se realiza la media
+ * @param S Array de doubles sobre el que se realiza la mediana
  */
 void sort(double *S){    
     int i = 0, j = 0, aux = 0;
