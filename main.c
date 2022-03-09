@@ -128,12 +128,13 @@ void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, fl
 
 void escribir_resultados(long L, int D, long R, long N, double ck){
     FILE *fp;
+	
 
-    if ((fp = fopen("resultados.txt", "a")) == NULL)
+    if ((fp = fopen("res_formato.txt", "a")) == NULL)
         salir("Error: no se ha podido abrir el archivo de resultados");
 
     //fprintf(fp, "L: %ld, D: %d, R: %ld, N: %ld\n%f\n", L, D, R, N, ck);
-    fprintf(fp, "L: %ld, D: %d, R: %ld, N: %ld\n%d\n", L, D, R, N, (int) ck);
+    fprintf(fp, "%ld %d %ld %ld %d\n", L, D, R, N, (int) ck);
 
     if (fclose(fp)) salir ("Error: no se ha podido cerrar el archivo de resultados");
 }
@@ -170,6 +171,51 @@ double calcular_media(double S[]){
     return media / N_RED;
 }
 
+/*
+ * Función que devuelve la mediana de los N_RED = 10 elementos de S[].
+ * El objetivo de esta función es utilizar los elementos de S[] para evitar optimizaciones del compilador.
+ * @param S Array de doubles sobre el que se realiza la media
+ */
+
+double calcular_mediana(double S[]){
+     double mediana = 0.0;
+     // Ordenacion del vector S en orden ascendente para obtener límite inferior de cada intervalo
+     sort(S);
+     
+     if(N_RED%2 == 0)
+     	mediana = S[(N_RED - 1) / 2] + S[N_RED / 2])/2.0;
+     else
+     	mediana = S[N_RED/2];
+     
+     return mediana;
+     
+
+}
+
+
+/*
+ * Función que ordenalos N_RED = 10 elementos de S[] en orden ascendente para calcular la mediana.
+ * @param S Array de doubles sobre el que se realiza la media
+ */
+void sort(double S*){    
+    int i = 0, j = 0, aux = 0;
+
+    for(i = 0; i < N_RED; i++){
+        for(j = 0; j < N_RED - 1; j++){
+            if(*(S + j) > *(S + j + 1))
+            {
+                aux  = *(S + j);
+                *(S + j) = *(S + j + 1);
+                *(S + j + 1) = aux;
+            }
+        }
+    }
+
+    printf("S tras ordenación:\n");
+    for(i = 0; i < N_RED; i++)
+        printf("\S[%d] : %d", i, *(S + i));
+
+}
 
 /*
  * Función que inicializa A con valores aleatorios con valor absoluto en el intervalo [1,2)
