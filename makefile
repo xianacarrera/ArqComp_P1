@@ -11,12 +11,14 @@ INCLUDES = -I $(HEADER_FILES_DIR)
 
 # Ficheros fuente
 SRCS = main.c counter.c
+SRCS_MEDIANA = mediana.c
 
 # Cabecera
 LIB_HEADERS = $(HEADER_FILES_DIR)/counter.h 
 
 # Nombre del ejecutable
 OUTPUT = accesos_cache
+OUTPUT_MEDIANA = mediana
 
 # Archivos objeto respectivos (.o con un .c análogo como fichero fuente)
 OBJS = $(SRCS:.c=.o)
@@ -27,11 +29,16 @@ OBJS = $(SRCS:.c=.o)
 # $@ es el nombre del archivo que se está generando, $< es el primer prerrequisito
 $(OUTPUT): $(OBJS) 
 	$(CC) -o $(OUTPUT) $(OBJS) $(OPCIONES)
+	
+$(OUTPUT_MEDIANA): $(OBJS_MEDIANA)
+    $(CC) -o $(OUTPUT_MEDIANA) $(OBJS)
 
 # Regla 2
 # Creamos cada archivo .o a partir de su correspondiente .c
 $(*.o): %.c $(LIB_HEADERS) 
 	$(CC) -c -o $@ $< $(INCLUDES)
+
+
 
 # Regla 3
 # Borra el ejecutable y ejecuta clean dentro del directorio actual

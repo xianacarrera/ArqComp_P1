@@ -1,19 +1,16 @@
-
-/*
- * ejemplo de ejecución: ./main.o factor(0.5) 1(cache L1) D(50)
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <pmmintrin.h>          // Opción -msse3 al compilar
+#include <pmmintrin.h>          // Requiere la opción -msse3 al compilar
 #include <time.h>
 #include <unistd.h>
 #include <math.h>               // Función log
 #include "counter.h"
 
 
-#define N_RED 10      // Número de veces que se repite la operación de reducción
+#define N_RED 10                // Número de veces que se repite la operación de reducción
 
+
+// TODO: distintos tamaños de linea cache
 
 void reducir(double A[], int ind[], double S[], long R);
 void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, float factor, int cache, int D);
@@ -42,19 +39,25 @@ int main(int argc, char * argv[]) {
     int B;          // Tamaño de línea caché en bytes
     long L;         // Número de líneas caché diferentes que se deben leer en el acceso a A
 
+
     if (argc != 4)
         salir("Error: el programa debe recibir tres argumentos:\n"
               "\t1) Un factor sobre S1 o S2\n"
               "\t2) 1 o 2, para indicar L1 de datos (S1) o L2 (S2)\n"
-              "\t3) El valor de D a emplear");
+              "\t3) El valor de D a emplear"
+              "Ejemplo: ./programa 0.5 1 50\n"
+              "(Equivale a L=0.5*S1; D=50)\n\n");
 
 
     srand((unsigned int) time(NULL));      // Fijamos la semilla para la generación de números aleatorios
 
-    // Damos valores a los parámetros
-    printf("\n\n\nParámetros: factor = %f, S = %d, D = %d\n", atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
+    // Imprimimos el valor de los parámetros determinados por los argumentos introducidos por línea de comandos
+    printf("\n\n\nParámetros fijados: L=%f*S%d, D = %d\n",
+           atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
 
-    D = atoi(argv[3]);
+
+    D = atoi(argv[3]);          // D se puede guardar directamente en base a los argumentos del programa
+    // El resto de parámetros se fijan en base a D, L, S1 y S2
     fijar_param(&L, &B, &R, &N, &S1, &S2, atof(argv[1]),atoi(argv[2]), D);
 
 
@@ -71,10 +74,10 @@ int main(int argc, char * argv[]) {
     if ((S = (double *) malloc(N_RED * sizeof(double))) == NULL)
         salir("Error: no se ha podido reservar memoria para S");
 
+
+
     inicializar_A(A, N);           // Guardamos N valores aleatorios en el rango [1, 2) en A
     calcular_indices(ind, D, R);      // Almacenamos los índices de los elementos de A a sumar según el D elegido
-
-
 
 
 
@@ -83,6 +86,7 @@ int main(int argc, char * argv[]) {
     reducir(A, ind, S, R);         // Realizamos las 10 sumas de R elementos de A
 
     ck = get_counter();         // Paramos el contador
+
 
     printf("\n Clocks=%1.10lf \n",ck);
 
@@ -106,6 +110,23 @@ int main(int argc, char * argv[]) {
 }
 
 
+/*
+ * Función fija los valores de los parámetros que se emplearán en la ejecución del programa.
+ * S1, S2 y B (el tamaño de la línea caché) se leen a través de una llamada al sistema.
+ * L depende del factor y la caché indicados como argumentos del programa, y del valor de S1 o S2, según corresponda.
+ * El valor de R se calcula en función de B, L y D.
+ * El valor de N se calcula en función de D y R.
+ *
+ * @param L Número de líneas caché distintas de las que se deben leer datos.
+ * @param B Tamaño de la línea caché.
+ * @param R Numero de elementos del vector A[] a sumar.
+ * @param N Tamaño del vector A[].
+ * @param S1 Numero de lineas cache que caben en la cache L1 de datos.
+ * @param S2 Numero de lineas cache que cabaen en la cache L2.
+ * @param factor Factor que se multiplica por S1 o S2 para calcular L (entrada del programa).
+ * @param cache Cache a utilizar: L1 de datos o L2 (entrada del programa).
+ * @param D Numero de posiciones que separan los elementos a sumar del vector A[].
+ */
 void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, float factor, int cache, int D){
     if (cache == 1) {
     	// Determinar el valor actual de los parámetros de la caché L1
