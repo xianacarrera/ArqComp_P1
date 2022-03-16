@@ -25,19 +25,21 @@ void pruebas(double A[], int ind[], int D, long L, int B, long R, long N, long S
 
 
 int main(int argc, char * argv[]) {
-    double * A;     // Array de doubles
-    int * ind;      // Array de referencias a posiciones de A
-    double * S;     // Resultados de la reducción
-    double ck;      // Tiempo de acceso en ciclos de reloj
+    double * A;        // Array de doubles
+    int * ind;         // Array de referencias a posiciones de A
+    double * S;        // Resultados de la reducción
+    double ck;         // Tiempo de 10 operaciones de reducción en ciclos de reloj
+    double ck_acceso;  // Tiempo por acceso en ciclos de reloj
 
-    long N;         // Tamaño del vector A
-    long R;         // Número de elementos de A a sumar
-    int D;          // Parámetro de espaciado entre los elementos a sumar: A[0], A[D], A[2*D], ..., A[(R-1)*D]
 
-    long S1;        // Número de líneas caché que caben en la caché L1 de datos
-    long S2;        // Número de líneas caché que caben en la caché L2
-    int B;          // Tamaño de línea caché en bytes
-    long L;         // Número de líneas caché diferentes que se deben leer en el acceso a A
+    long N;            // Tamaño del vector A
+    long R;            // Número de elementos de A a sumar
+    int D;             // Parámetro de espaciado entre los elementos a sumar: A[0], A[D], A[2*D], ..., A[(R-1)*D]
+
+    long S1;           // Número de líneas caché que caben en la caché L1 de datos
+    long S2;           // Número de líneas caché que caben en la caché L2
+    int B;             // Tamaño de línea caché en bytes
+    long L;            // Número de líneas caché diferentes que se deben leer en el acceso a A
 
 
     if (argc != 4)
@@ -98,8 +100,12 @@ int main(int argc, char * argv[]) {
     printf("Media: %f\n", calcular_media(S));
 
     //print_cache_info();
+    // Cada reducción realiza R accesos al vector A[]
+    // Por cada llamada a reducir() se realizan 10 reducciones (que resultan en los 10 elementos de S[])
+    // Por tanto, el tiempo por acceso en ciclos es ck/(10*R), esto es, el tiempo total entre el número de accesos
+    ck_acceso = ck/(10*R);
 
-    escribir_resultados(L, D, R, N, ck);
+    escribir_resultados(L, D, R, N, ck_acceso);
 
     // Liberamos la memoria reservada
     _mm_free(A);
@@ -147,7 +153,7 @@ void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, fl
 }
 
 
-void escribir_resultados(long L, int D, long R, long N, double ck){
+void escribir_resultados(long L, int D, long R, long N, double ck_acceso){
     FILE *fp;
 	
 
@@ -155,7 +161,7 @@ void escribir_resultados(long L, int D, long R, long N, double ck){
         salir("Error: no se ha podido abrir el archivo de resultados");
 
     //fprintf(fp, "L: %ld, D: %d, R: %ld, N: %ld\n%f\n", L, D, R, N, ck);
-    fprintf(fp, "%ld %d %ld %ld %d\n", L, D, R, N, (int) ck);
+    fprintf(fp, "%ld %d %ld %ld %d\n", L, D, R, N, (int) ck_acceso);
 
     if (fclose(fp)) salir ("Error: no se ha podido cerrar el archivo de resultados");
 }
