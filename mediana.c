@@ -36,6 +36,7 @@ int main(int argc, char * argv[]){
         exit(EXIT_FAILURE);
     }
 
+// Si no está creado, se crea??
     if ((res_finales = fopen("res_totales.txt", "a")) == NULL){
         fprintf(stderr, "Error al abrir el archivo de resultados finales\n");
         exit(EXIT_FAILURE);

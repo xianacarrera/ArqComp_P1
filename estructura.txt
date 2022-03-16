@@ -14,7 +14,7 @@ El script bash_script.sh permite automatizar todas las pruebas. Desde él:
 * Para cada L
     * Para cada D
         * Se realizan 10 medidas del tiempo en ciclos de reloj ejecutando el programa .c
-        * Se toma la mediana de esas 10 medidas y se escribe en resultados.txt
+        * Se toma la mediana de esas 10 medidas y se escribe en res_finales.txt
         
 (7 * 5 * 10 = 350 medidas; 35 resultados)
 

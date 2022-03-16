@@ -31,7 +31,7 @@ $(OUTPUT): $(OBJS)
 	$(CC) -o $(OUTPUT) $(OBJS) $(OPCIONES)
 	
 $(OUTPUT_MEDIANA): $(OBJS_MEDIANA)
-    $(CC) -o $(OUTPUT_MEDIANA) $(OBJS)
+	$(CC) -o $(OUTPUT_MEDIANA) $(OBJS)
 
 # Regla 2
 # Creamos cada archivo .o a partir de su correspondiente .c
