@@ -5,6 +5,10 @@ cache=(1 1 2 2 2 2 2)
 lista_D="1 5 10 50 95"
 
 
+# Borramos res_totales si ya existía
+rm res_totales.txt
+# (mediana opera con el modo "a" sobre res_totales -> se crea si no existe)
+
 for D in $lista_D
 do
     for i in {0..6}

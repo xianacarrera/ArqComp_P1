@@ -4,9 +4,9 @@
 
 #define NE 10
 
-void sort(long CK[NE]){
+void sort(double CK[NE]){
     int i, j;
-    long temp;
+    double temp;
 
     for (i = 0; i < NE; i++){
         for (j = 0; j < NE -1; j++){
@@ -24,12 +24,12 @@ int main(int argc, char * argv[]){
     FILE *res_temporales;
     FILE *res_finales;
     int i;
-    float mediana;
+    double mediana;
     long L;
     int D;
     long R;
     long N;
-    long CK[NE];
+    double CK[NE];
 
     if ((res_temporales = fopen("res_temporales.txt", "r")) == NULL){
         fprintf(stderr, "Error al abrir el archivo de resultados temporales\n");
@@ -43,11 +43,11 @@ int main(int argc, char * argv[]){
     }
 
     for (i = 0; i < NE; i++){
-        fscanf(res_temporales, "%ld %d %ld %ld %ld", &L, &D, &R, &N, &CK[i]);
+        fscanf(res_temporales, "%ld %d %ld %ld %lf", &L, &D, &R, &N, &CK[i]);
     }
     sort(CK);
 
-    mediana = (CK[4] + CK[5]) / ((float) 2);
+    mediana = (CK[4] + CK[5]) / ((double) 2);
 
     fprintf(res_finales, "%ld %d %ld %ld %f\n", L, D, R, N, mediana);
 

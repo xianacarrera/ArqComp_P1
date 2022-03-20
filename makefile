@@ -3,6 +3,7 @@ CC = gcc
 # Opciones de compilación (incluir la librería de _mm_malloc, la librería matemática, no
 # optimizar y mostrar todos los warnings)
 OPCIONES = -msse3 -lm -O0 -Wall
+OPCIONES_MEDIANA = -O0 -Wall
 
 # Carpeta donde se encuentran las cabeceras
 HEADER_FILES_DIR = .
@@ -22,16 +23,22 @@ OUTPUT_MEDIANA = mediana
 
 # Archivos objeto respectivos (.o con un .c análogo como fichero fuente)
 OBJS = $(SRCS:.c=.o)
+OBJS_MEDIANA = $(SRCS_MEDIANA:.c=.o)
 
+# Regla 1
+# Creamos el ejecutable de cada programa
+all: $(OUTPUT) $(OUTPUT_MEDIANA)
 
 # Regla 1
 # Creamos el ejecutable del programa
 # $@ es el nombre del archivo que se está generando, $< es el primer prerrequisito
 $(OUTPUT): $(OBJS) 
 	$(CC) -o $(OUTPUT) $(OBJS) $(OPCIONES)
-	
+
+
+#fjdksl
 $(OUTPUT_MEDIANA): $(OBJS_MEDIANA)
-	$(CC) -o $(OUTPUT_MEDIANA) $(OBJS)
+	$(CC) -o $(OUTPUT_MEDIANA) $(OBJS_MEDIANA) $(OPCIONES_MEDIANA)
 
 # Regla 2
 # Creamos cada archivo .o a partir de su correspondiente .c

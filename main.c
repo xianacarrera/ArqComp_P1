@@ -161,7 +161,7 @@ void escribir_resultados(long L, int D, long R, long N, double ck_acceso){
         salir("Error: no se ha podido abrir el archivo de resultados");
 
     //fprintf(fp, "L: %ld, D: %d, R: %ld, N: %ld\n%f\n", L, D, R, N, ck);
-    fprintf(fp, "%ld %d %ld %ld %d\n", L, D, R, N, (int) ck_acceso);
+    fprintf(fp, "%ld %d %ld %ld %f\n", L, D, R, N, ck_acceso);
 
     if (fclose(fp)) salir ("Error: no se ha podido cerrar el archivo de resultados");
 }
