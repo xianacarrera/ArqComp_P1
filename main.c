@@ -54,13 +54,13 @@ int main(int argc, char * argv[]) {
     srand((unsigned int) time(NULL));      // Fijamos la semilla para la generación de números aleatorios
 
     // Imprimimos el valor de los parámetros determinados por los argumentos introducidos por línea de comandos
-    printf("\n\n\nParámetros fijados: L=%f*S%d, D = %d\n",
-           atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
+    printf("\n\n\nParámetros fijados: D = %d, L=%f*S%d\n",
+           atoi(argv[1]), atof(argv[2]), atoi(argv[3]));
 
 
-    D = atoi(argv[3]);          // D se puede guardar directamente en base a los argumentos del programa
+    D = atoi(argv[1]);          // D se puede guardar directamente en base a los argumentos del programa
     // El resto de parámetros se fijan en base a D, L, S1 y S2
-    fijar_param(&L, &B, &R, &N, &S1, &S2, atof(argv[1]),atoi(argv[2]), D);
+    fijar_param(&L, &B, &R, &N, &S1, &S2, atof(argv[2]), atoi(argv[3]), D);
 
 
     pruebas(A, ind, D, L, B, R, N, S1, S2);
@@ -92,8 +92,8 @@ int main(int argc, char * argv[]) {
 
     printf("\n Clocks=%1.10lf \n",ck);
 
-    // Imprimimos la frecuencia de reloj estimada 
-    mhz(1,1);
+    // Imprimimos la frecuencia de reloj estimada
+    //mhz(1,1);
 
     // Imprimimos los 10 resultados (que deberían ser iguales) y su media para evitar optimizaciones del compilador
     for (int i = 0; i < N_RED; i++) printf("S[%d] = %f\n", i, S[i]);
@@ -137,7 +137,7 @@ void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, fl
     if (cache == 1) {
     	// Determinar el valor actual de los parámetros de la caché L1
         *B = (int) sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
-        // S1 almacenará el número de líneas 
+        // S1 almacenará el número de líneas
         *S1 = sysconf(_SC_LEVEL1_DCACHE_SIZE) / *B;
         *L = *S1 * factor;
     } else {
@@ -147,7 +147,7 @@ void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, fl
         *L = *S2 * factor;
     }
     // Obtención del número de accesos a A
-    *R = (int) (ceil(*B * (*L - 1) / (double) D)) + 1;
+    *R = (int) (ceil(*B * (*L - 1) / (double) (D * sizeof(double)))) + 1;
     // Leeremos hasta A[(R-1)*D], el tamaño mínimo del array tendrá el último valor del índice (R-1)*D + 1 (ese mismo)
     *N = D * (*R-1) + 1;
 }
@@ -155,7 +155,7 @@ void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, fl
 
 void escribir_resultados(long L, int D, long R, long N, double ck_acceso){
     FILE *fp;
-	
+
 
     if ((fp = fopen("res_temporales.txt", "a")) == NULL)
         salir("Error: no se ha podido abrir el archivo de resultados");
