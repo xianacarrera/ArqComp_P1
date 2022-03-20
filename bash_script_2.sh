@@ -6,9 +6,13 @@ lista_D="1 5 25 50 64"
 
 
 # Borramos res_totales si ya existía
+rm res_temporales.txt       
 rm res_totales.txt
-# (mediana opera con el modo "a" sobre res_totales -> se crea si no existe)
-    
+
+# No hace falta crear res_temporales porque main lo abre en "a" -> se crea si no existía
+
+touch res_totales.txt
+echo "L D R N CK" >> res_totales.txt
    
 for k in {0..9}    
 do
