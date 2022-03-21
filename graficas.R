@@ -86,7 +86,7 @@ for (i in lista_L[-1]){
   # Con which obtenemos el índice del elemento de la lista que es igual a i
   lines(D[L==i], CK[L==i], type="o", col=which(i==lista_L), pch=19)
 }
-legend("right", legend=levels(factor(L)), lty=1, lwd=3, col = 1:5,
+legend("right", legend=levels(factor(L)), lty=1, lwd=3, col = 1:7,
        title = "L", inset=c(-0.2, 0))
 
 
