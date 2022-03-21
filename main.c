@@ -147,7 +147,7 @@ void fijar_param(long * L, int * B, long * R, long * N, long * S1, long * S2, fl
         *L = *S2 * factor;
     }
     // Obtención del número de accesos a A
-    *R = (int) (ceil(*B * (*L - 1) / (double) (D * sizeof(double)))) + 1;
+    *R = D >= 8? *L : (int) (ceil(*B * (*L - 1) / (double) (D * sizeof(double)))) + 1;
     // Leeremos hasta A[(R-1)*D], el tamaño mínimo del array tendrá el último valor del índice (R-1)*D + 1 (ese mismo)
     *N = D * (*R-1) + 1;
 }

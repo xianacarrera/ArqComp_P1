@@ -13,6 +13,7 @@ INCLUDES = -I $(HEADER_FILES_DIR)
 # Ficheros fuente
 SRCS = main.c counter.c
 SRCS_MEDIANA = mediana.c
+SRCS_MEDIANA_2 = mediana2.c
 
 # Cabecera
 LIB_HEADERS = $(HEADER_FILES_DIR)/counter.h 
@@ -20,10 +21,12 @@ LIB_HEADERS = $(HEADER_FILES_DIR)/counter.h
 # Nombre del ejecutable
 OUTPUT = accesos_cache
 OUTPUT_MEDIANA = mediana
+OUTPUT_MEDIANA_2 = mediana2
 
 # Archivos objeto respectivos (.o con un .c análogo como fichero fuente)
 OBJS = $(SRCS:.c=.o)
 OBJS_MEDIANA = $(SRCS_MEDIANA:.c=.o)
+OBJS_MEDIANA_2 = $(SRCS_MEDIANA_2:.c=.o)
 
 # Regla 1
 # Creamos el ejecutable de cada programa
@@ -39,6 +42,10 @@ $(OUTPUT): $(OBJS)
 #fjdksl
 $(OUTPUT_MEDIANA): $(OBJS_MEDIANA)
 	$(CC) -o $(OUTPUT_MEDIANA) $(OBJS_MEDIANA) $(OPCIONES_MEDIANA)
+	
+#mediana 2
+$(OUTPUT_MEDIANA_2): $(OBJS_MEDIANA)
+	$(CC) -o $(OUTPUT_MEDIANA_2) $(OBJS_MEDIANA_2) $(OPCIONES_MEDIANA)
 
 # Regla 2
 # Creamos cada archivo .o a partir de su correspondiente .c
