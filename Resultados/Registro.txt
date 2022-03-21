@@ -1,0 +1,3 @@
+2 - 1 5 10 50 99
+	bash_script_2 -> independencia de ejecuciones
+	Valores de D: 1 5 10 50 99

@@ -1,4 +1,4 @@
-datos <- read.table("res_totales_1.txt", header=T, sep=" ", dec=".")
+datos <- read.table("res_totales.txt", header=T, sep=" ", dec=".")
 attach(datos)
 head(datos)
 summary(datos)
