@@ -51,9 +51,7 @@ int main(int argc, char * argv[]){
 
     for (i = 0; i < NL * ND; i++){
         sort(CK[i]);
-        for (j = 0; j < NE; j++) printf("%f\n", CK[i][j]);
         mediana = (CK[i][4] + CK[i][5]) / ((double) 2);
-        printf("Mediana: %f\n", mediana);
         fprintf(res_finales, "%ld %d %ld %ld %f\n", L[i], D[i], R[i], N[i], mediana);
     }
 

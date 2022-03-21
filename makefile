@@ -30,7 +30,7 @@ OBJS_MEDIANA_2 = $(SRCS_MEDIANA_2:.c=.o)
 
 # Regla 1
 # Creamos el ejecutable de cada programa
-all: $(OUTPUT) $(OUTPUT_MEDIANA)
+all: $(OUTPUT) $(OUTPUT_MEDIANA) $(OUTPUT_MEDIANA_2)
 
 # Regla 1
 # Creamos el ejecutable del programa
@@ -44,7 +44,7 @@ $(OUTPUT_MEDIANA): $(OBJS_MEDIANA)
 	$(CC) -o $(OUTPUT_MEDIANA) $(OBJS_MEDIANA) $(OPCIONES_MEDIANA)
 	
 #mediana 2
-$(OUTPUT_MEDIANA_2): $(OBJS_MEDIANA)
+$(OUTPUT_MEDIANA_2): $(OBJS_MEDIANA_2)
 	$(CC) -o $(OUTPUT_MEDIANA_2) $(OBJS_MEDIANA_2) $(OPCIONES_MEDIANA)
 
 # Regla 2
