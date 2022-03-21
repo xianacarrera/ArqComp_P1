@@ -19,7 +19,7 @@ void inicializar_A(double A[], long N);
 void salir(char * msg);
 void calcular_indices(int ind[], int D, long R);
 void escribir_resultados(long L, int D, long R, long N, double ck);
-void desordenar(int ind[], long N);
+void desordenar(int ind[], long R);
 
 // Usar esta función para probar código temporalmente (la borraremos al entregar)
 void pruebas(double A[], int ind[], int D, long L, int B, long R, long N, long S1, long S2);
@@ -81,7 +81,7 @@ int main(int argc, char * argv[]) {
 
     inicializar_A(A, N);           // Guardamos N valores aleatorios en el rango [1, 2) en A
     calcular_indices(ind, D, R);      // Almacenamos los índices de los elementos de A a sumar según el D elegido
-    desordenar(ind, N);
+    desordenar(ind, R);
 
 
     start_counter();            // Iniciamos la medición del tiempo de acceso total
@@ -172,13 +172,13 @@ void escribir_resultados(long L, int D, long R, long N, double ck_acceso){
    Only effective if N is much smaller than RAND_MAX;
    if this may not be the case, use a better random
    number generator. */
-void desordenar(int ind[], long N){
+void desordenar(int ind[], long R){
     size_t i, j;
     long temp;
 
-    if (N > 1) {
-        for (i = 0; i < N - 1; i++) {
-            j = i + rand() / (RAND_MAX / (N - i) + 1);
+    if (R > 1) {
+        for (i = 0; i < R - 1; i++) {
+            j = i + rand() / (RAND_MAX / (R - i) + 1);
             temp = ind[j];
             ind[j] = ind[i];
             ind[i] = temp;
