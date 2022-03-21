@@ -21,3 +21,7 @@ Interpretación: el prefetching es mucho más irregular.
 Énfasis en la prueba anterior. Más pruebas para la hipótesis: el paso de 
 15 a 16 es el más significativo, mientras que entre el resto de valores
 la transición es más gradual.
+
+2 - 99 50 10 5 1
+En esta prueba estamos interesados en comprobar si el orden en el que se 
+ejecutan las pruebas de D alteran los resultados. No se observan cambios.
