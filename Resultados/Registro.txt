@@ -1,3 +1,10 @@
 2 - 1 5 10 50 99
 	bash_script_2 -> independencia de ejecuciones
 	Valores de D: 1 5 10 50 99
+
+2 - 5 7 8 9 13
+Hay un salto notable de 8 a 9 y, especialmente, de 9 a 13.
+Tiene sentido: cuando se pasa de 8 a 9 empiezan a saltarse líneas caché
+-> prefetching menos efectivo. Cuanto más aumenta D, más líneas se saltan
+-> aún menos efectivo.
+Entre 5 7 8 hay poca diferencia.
