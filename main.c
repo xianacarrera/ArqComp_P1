@@ -45,9 +45,9 @@ int main(int argc, char * argv[]) {
 
     if (argc != 4)
         salir("Error: el programa debe recibir tres argumentos:\n"
-              "\t1) Un factor sobre S1 o S2\n"
-              "\t2) 1 o 2, para indicar L1 de datos (S1) o L2 (S2)\n"
-              "\t3) El valor de D a emplear"
+              "\t1) El valor de D a emplear"              
+	      "\t2) Un factor sobre S1 o S2\n"
+              "\t3) 1 o 2, para indicar L1 de datos (S1) o L2 (S2)\n"
               "Ejemplo: ./programa 0.5 1 50\n"
               "(Equivale a L=0.5*S1; D=50)\n\n");
 
@@ -70,7 +70,7 @@ int main(int argc, char * argv[]) {
     if ((A = (double *) _mm_malloc(N * sizeof(double), B)) == NULL)
         salir("Error: no se ha podido reservar memoria para A");
 
-    // El tamaño máximo que puede tener ind es N (si apunta a todas las posiciones de A)
+    // El tamaño máximo que puede tener ind es N (si apunta a to\das las posiciones de A)
     if ((ind = (int *) malloc(N * sizeof(int))) == NULL)
         salir("Error: no se ha podido reservar memoria para ind");
 

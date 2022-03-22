@@ -1,4 +1,4 @@
-datos <- read.table("res_totales.txt", header=T, sep=" ", dec=".")
+datos <- read.table("1 3 7 8 16 O0 D.txt", header=T, sep=" ", dec=".")
 attach(datos)
 head(datos)
 summary(datos)
@@ -77,7 +77,7 @@ grid(nx = NULL, ny = NULL, lty = 2, col = "lightgray", lwd = 1)
 par(xpd=T)
 
 mtext(side = 3, line = 2, cex=1, 
-      "Coste en ciclos de cada acceso a memoria según el espacio impuesto entre los elementos de A[] a sumar")
+      "Coste en ciclos de cada acceso a memoria según el espacio entre los sumandos de A[]")
 mtext(side = 3, line = 1, cex=0.8, 
       "Influencia de D, con datos agrupados por L (número de líneas caché diferentes referenciadasr)")
 
@@ -87,7 +87,7 @@ for (i in lista_L[-1]){
   lines(D[L==i], CK[L==i], type="o", col=which(i==lista_L), pch=19)
 }
 legend("right", legend=levels(factor(L)), lty=1, lwd=3, col = 1:7,
-       title = "L", inset=c(-0.2, 0))
+       title = "L", inset=c(-0.25, 0))
 
 
 mtext(side = 1, line = 3.8, cex = 1, 
@@ -96,7 +96,7 @@ axis(1, at=D, las=1, lwd=1)
 
 
 #**************************************************************************
-# Gráfica 2 (3D): Número de ciclos (eje Z) en función de L (eje X) y en 
+# Gráfica 3 (3D): Número de ciclos (eje Z) en función de L (eje X) y en 
 # función de D (eje Y)
 #**************************************************************************
 
@@ -115,7 +115,7 @@ htmlwidgets::saveWidget(as_widget(p3), "index.html")
 
 
 #**************************************************************************
-# Gráfica 3 (3D): Función de obtención de R a partir de L y D, con B fijo.
+# Gráfica 4 (3D): Función de obtención de R a partir de L y D, con B fijo.
 #**************************************************************************
 
 #install.packages("plot3D")
@@ -133,35 +133,15 @@ plot3d(funcion_R, col=colorRampPalette(c("blue", "lightblue", "orange", "red")),
        xlab="L", ylab="D", zlab="R", xlim=c(0,30000), ylim=c(1,99), 
        aspect=c(1,1,0.5))
 
+rgl.snapshot('R_plot.png', fmt = 'png')
+
 
 #**************************************************************************
-# Gráfica 4 (2D): Número de ciclos (eje Y) en función de R/L (eje X)
+# Gráfica 5 (2D): Número de ciclos (eje Y) en función de R/L (eje X)
 #**************************************************************************
 
 # R/L representa un factor de "localidad espacial". Cuanto mayor es el número
 # de datos que tenemos que coger por línea, mayor es la localidad espacial.
-
-
-############# ANTIGUO
-ggplot(R/L, CK, type="p",
-     col=factor(L), pch=19,
-     ylim=c(floor(min(CK)), ceiling(max(CK))),
-     xlab = ,
-     ylab = )
-
-par(xpd=F) 
-grid(nx = NULL, ny = NULL, lty = 2, col = "lightgray", lwd = 1)
-par(xpd=T)
-
-legend("right", legend=levels(factor(L)), lty=1, lwd=3, col = 1:5, 
-       title = "D", inset=c(-0.5, 0))
-
-mtext(side = 3, line = 2, cex=1, 
-      )
-mtext(side = 3, line = 1, cex=0.8, 
-      )
-
-###################
 
 #install.packages("ggplot2")
 library(ggplot2)
@@ -174,7 +154,7 @@ ggplot(data = datos, mapping = aes(x = loc_esp, y = CK)) +
          geom_point(aes(color=L, group=L)) +
          geom_smooth(method="lm", formula=y~x) +
          stat_summary(fun.data=mean_cl_normal) +
-         labs(subtitle="Influencia de R/L (cantidad de elementos que se suman por línea cache, con valores agrupados por D (espacio entre elementos)",
+         labs(subtitle="Influencia de R/L (cantidad de elementos que se suman por línea cache, con valores agrupados por D",
               y = "Número de ciclos de reloj por acceso a memoria",
               x = "R/L (medida del número elementos a sumar por línea cache diferente a emplear)",
               title = "Coste en ciclos de cada acceso a memoria según la localidad espacial")
