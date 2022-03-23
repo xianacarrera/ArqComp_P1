@@ -156,7 +156,7 @@ library(rgl)
 funcion_R <- function(x, y){
   # x=L, y=D
   # Asumimos B=64
-  return(ceiling(64*(x-1)/y*8)+1)
+  ifelse(y < 8, ceiling(64*(x-1)/y*8)+1, x)
 }
 
 open3d()   # Abrimos una ventana para imprimir en 3D
