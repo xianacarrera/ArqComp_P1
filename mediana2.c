@@ -44,6 +44,7 @@ void sort(double CK[NE]){
 }
 
 
+
 int main(int argc, char * argv[]){
     FILE *res_temporales;           // Archivo de resultados sin procesar
     FILE *res_finales;              // Archivo de los resultados obtenidos con la mediana
@@ -74,6 +75,7 @@ int main(int argc, char * argv[]){
     // bloques, y el interior es sobre los 35 experimentos.
     // (El motivo de esta organización es incrementar la independencia de las pruebas).
     for (j = 0; j < NE; j++){
+    	// Para cada experimento j, se almacenan los 35 tiempos correspondientes a los 35 pares (D,L) distintos por acceso calculados en CK[][j] 
         for (i = 0; i < NL * ND; i++){
             // Almacenamos los parámetros
             // L, D, R y N no varían para distintos j
@@ -98,4 +100,23 @@ int main(int argc, char * argv[]){
     fclose(res_finales);
 
     exit(EXIT_SUCCESS);
+}
+
+/*
+ * Función que ordena en orden ascendente los elementos de un vector para el cálculo de la mediana
+ * @param CK Array de los 10 resultados obtenidos en cada experimento para cada par (D,L)
+ */
+void sort(double CK[NE]){
+    int i, j;
+    double temp;
+
+    for (i = 0; i < NE; i++){
+        for (j = 0; j < NE -1; j++){
+            if (CK[j] > CK[j+1]){
+                temp = CK[j];
+                CK[j] = CK[j+1];
+                CK[j+1] = temp;
+            }
+        }
+    }
 }
