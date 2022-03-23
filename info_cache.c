@@ -24,6 +24,9 @@ int main(int argc, char * argv[]) {
     long n_lineas_L1I;          // Número de líneas de la caché L1 de instrucciones
     long n_lineas_L1D;          // Número de líneas de la caché L1 de datos
     long n_lineas_L2;           // Número de líneas de la caché L2
+    long n_conjuntos_L1I;       // Número de conjuntos de la caché L1 de instrucciones
+    long n_conjuntos_L1D;       // Número de conjuntos de la caché L1 de datos
+    long n_conjuntos_L2;        // Número de conjuntos de la caché L2
 
     /***** Caché L1 de instrucciones *****/
 
@@ -42,6 +45,9 @@ int main(int argc, char * argv[]) {
     // El número de líneas será igual al tamaño total dividido por el tamaño de cada línea cache
     n_lineas_L1I = total / tam_linea;
 
+    // El número de conjuntos será igual al número de líneas dividido por el número de vías
+    n_conjuntos_L1I = n_lineas_L1I / vias;
+
     /***** Caché L1 de datos *****/
 
     total = sysconf(_SC_LEVEL1_DCACHE_SIZE);
@@ -54,6 +60,7 @@ int main(int argc, char * argv[]) {
     printf("\tTamanho de linea: %ld\n\n", tam_linea);
 
     n_lineas_L1D = total / tam_linea;
+    n_conjuntos_L1D = n_lineas_L1D / vias;
 
     /***** Caché L2 *****/
 
@@ -67,6 +74,8 @@ int main(int argc, char * argv[]) {
     printf("\tTamanho de linea: %ld\n\n", tam_linea);
 
     n_lineas_L2 = total / tam_linea;
+    n_conjuntos_L2 = n_lineas_L2 / vias;
+
 
     /***** Caché L3 *****/
 
@@ -79,9 +88,15 @@ int main(int argc, char * argv[]) {
     printf("\tNº de vías: %ld\n", vias);
     printf("\tTamanho de linea: %ld\n\n", tam_linea);
 
-    // Finalmente, se imprime el número de líneas de cada cache
+    // Se imprime el número de líneas de cada cache
     printf("S1I = nº líneas L1I = %ld\n", n_lineas_L1I);
     printf("S1D = nº líneas L1D = %ld\n", n_lineas_L1D);
     printf("S2 = nº líneas L2 = %ld\n", n_lineas_L2);
     printf("S3 = nº líneas L3 = %ld\n\n", total / tam_linea);       // total y tam_linea hacen referencia a la L3
+
+    // E imprimimos también el número de conjuntos
+    printf("Nº conjuntos L1I = %ld\n", n_conjuntos_L1I);
+    printf("Nº conjuntos L1D = %ld\n", n_conjuntos_L1D);
+    printf("Nº conjuntos L2 = %ld\n", n_conjuntos_L2);
+    printf("Nº conjuntos L3 = %ld\n\n", total / (tam_linea * vias));    
 }
