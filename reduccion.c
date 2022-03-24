@@ -141,7 +141,7 @@ int main(int argc, char * argv[]) {
     printf("\nTiempo de 10 reducciones en ciclos de reloj = %1.10lf\n", ck);
 
     // Imprimimos la frecuencia de reloj estimada
-    mhz(1,1);
+    //mhz(1,1);
 
     // Imprimimos los 10 resultados (que deberían ser iguales) y su media para evitar optimizaciones del compilador,
     // que en caso contrario podría optar por no ejecutar determinadas operaciones
@@ -236,6 +236,7 @@ void escribir_resultados(long L, int D, long R, long N, double ck_acceso){
     if ((fp = fopen("res_temporales.txt", "a")) == NULL)
         salir("Error: no se ha podido abrir el archivo de resultados");
 
+    printf("L D R N ck_acceso: %ld %d %ld %ld %f\n", L, D, R, N, ck_acceso);
     fprintf(fp, "%ld %d %ld %ld %f\n", L, D, R, N, ck_acceso);
 
     if (fclose(fp)) salir ("Error: no se ha podido cerrar el archivo de resultados");
