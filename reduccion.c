@@ -112,13 +112,14 @@ int main(int argc, char * argv[]) {
         salir("Error: no se ha podido reservar memoria para S");
 
 
-    // Guardamos N valores aleatorios con signo aleatorio y valor absoluto en el rango [1,2) para evitar posibles
-    // efectos de inicialización de los niveles de la jerarquía de memoria
-    inicializar_A(A, N);
+
     calcular_indices(ind, D, R);      // Almacenamos los índices de los elementos de A a sumar según el D elegido
     // Desordenamos ind[] de forma aleatoria para minimizar la localidad espacial
     // Se verifica que el vector quede realmente desordenado y, si no es así, se repite el proceso hasta que lo esté
     desordenar(ind, R);
+    // Guardamos N valores aleatorios con signo aleatorio y valor absoluto en el rango [1,2) para evitar posibles
+    // efectos de inicialización de los niveles de la jerarquía de memoria
+    inicializar_A(A, N);
 
 
     /********************************************** REDUCCIÓN ****************************************************/
