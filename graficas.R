@@ -9,7 +9,7 @@
 
 # Leemos los datos, con una cabecera inicial, separados por un espacio
 # y con un punto como marca decimal
-datos <- read.table("1 3 7 8 16 O0 D.txt", header=T, sep=" ", dec=".")
+datos <- read.table("1 6 8 15 71 O0 D.txt", header=T, sep=" ", dec=".")
 attach(datos)     # Convertimos los componentes de datos en variables 
 head(datos)       # Lectura de una muestra de los datos
 summary(datos)    # Resumen estadístico de los datos
@@ -113,7 +113,7 @@ for (i in lista_L[-1]){
 
 # Añadimos una leyenda en el margen derecho
 legend("right", legend=levels(factor(L)), lty=1, lwd=3, col = 1:7,
-       title = "L", inset=c(-0.25, 0))
+       title = "L", inset=c(-0.2, 0))
 
 # Configuramos el eje X y cambiamos las etiquetas para que coincidan con los 
 # valores de D

@@ -24,10 +24,11 @@ lista_D="14 15 16 17 18"                # Valores seleccionados de D
 rm res_temporales.txt       
 rm res_totales.txt
 
-# No hace falta volver a crear ni res_temporales ni res_totales, ya que reduccion y mediana 
+# No hace falta volver a crear res_temporales, ya que mediana 
 # los crean si no existen (los abren en el modo "a" y "w", respectivamente).
 
 # Escribimos una cabecera para poder interpretar los resultados
+touch res_totales.txt
 echo "L D R N CK" >> res_totales.txt
    
 for k in {0..9}         # Cada par (D, L) tiene 10 pruebas asociadas
