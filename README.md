@@ -34,9 +34,9 @@ The purpose of this assignment is to study the influence of locality in data ref
 
 The study takes into account the memory hierarchy, cache misses, memory locality foundamental principles, preload operations to the cache, the consequences of different compilation options, etc.
 
-The analysis is centered around a floating-point sum operation, which is then reduced, over a vector of ``doubles``. The time needed for said operation has been measured in clock cycles changing different parameters present in the program, in order to examine the influence of each of them. The execution and results generation is automatically performed using a bash script.
+The analysis is centered around a floating-point sum operation, which is then reduced, over a vector of ``doubles``. The time needed for said operation has been measured in clock cycles changing different parameters present in the program, in order to examine the influence of each of them. The execution and results generation are automatically performed using a bash script.
 
-The results have been qualitatively and quantitavively analyzed through several graphical representations, some of them in a 3D interactive format (see the ``Graficas_3D`` folder, where there are also some variants that ended up not being included in the final report, in the subfolder called ``Extra``).
+The results have been qualitatively and quantitavively studied through several graphical representations, some of them in a 3D interactive format (see the ``Graficas_3D`` folder, where there are also some variants that ended up not being included in the final report, in the subfolder called ``Extra``).
 
 The full description and analysis have been documented in ``Informe.pdf`` and ``Apendice.pdf``, which comprise the report and, ultimately, the hand-in for the assignment.
 
