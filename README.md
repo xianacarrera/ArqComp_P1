@@ -10,7 +10,7 @@ Los resultados se han analizado de forma cualitativa y cuantitativa a través de
 
 La descripción y el análisis completo del problema están documentados en ``Informe.pdf`` y en ``Apendice.pdf``.
 
-Este trabajo corresponde a la práctica 1 de la asignatura Arquitectura de Computadores, cursada en el 1º cuatrimestre del 3º año del Doble Grado en Ingeniería Informática y Matemáticas de la Universidad de Santiago de Compostela.
+Este trabajo corresponde a la práctica 1 de la asignatura Arquitectura de Computadores, cursada en el 2º cuatrimestre del 3º año del Doble Grado en Ingeniería Informática y Matemáticas de la Universidad de Santiago de Compostela.
 
 ## Nomenclatura de las gráficas
 
@@ -40,4 +40,4 @@ The results have been qualitatively and quantitavively studied through several g
 
 The full description and analysis have been documented in ``Informe.pdf`` and ``Apendice.pdf``, which comprise the report and, ultimately, the hand-in for the assignment.
 
-This assignment was the first project in the Computer Architecture course, taken in the 1st period of the 3rd year of the Double Degree in Informatics Engineering and Mathematics, at the University of Santiago de Compostela.
+This assignment was the first project in the Computer Architecture course, taken in the 2nd period of the 3rd year of the Double Degree in Informatics Engineering and Mathematics, at the University of Santiago de Compostela.
